@@ -145,9 +145,10 @@ export interface InlineConfig {
   setupFiles?: string | string[]
 
   /**
-   * Path to global setup files
+   * global setup function
    */
-  globalSetup?: string | string[]
+  globalSetup?: () => (Promise<Function|void> | void)
+
   /**
    * Pattern of file paths to be ignore from triggering watch rerun
    *

@@ -237,40 +237,21 @@ Path to setup files
 
 ### globalSetup
 
-- **Type:** `string | string[]`
+- **Type:** `Function`
 
-Path to global setup files
+Function for global setup logic. Optionally return a function to run global teardown logic 
 
-Like in jest, you can use `<rootDir>` to reference the project root
-```js
-{
-    globalSetup: '<rootDir>/vitest-global-setup.js'
-}
-```
-
-Files must be javascript and you can either export named functions
-```js
-let server;
-export async function setup() {
-    server = await startServer()
-}
-export async function teardown() {
-    await server.close()
-}
-```
-or export a setup function as default that returns the teardown
-
-```js
-export default async function() {
+```ts
+async function globalSetup() {
+    // create global resources
     const server = await startServer()
-    return async() => {
+    
+    // return a teardown function
+    return async () => {
         await server.close()
     }
 }
 ```
-
-Multiple globalSetup files are possible. setup and teardown are executed sequentially with teardown in reverse order.
-
 
 ### watchIgnore
 

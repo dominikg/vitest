@@ -6,7 +6,7 @@ import { Tinypool } from 'tinypool'
 import type { RawSourceMap } from 'source-map-js'
 import { createBirpc } from 'birpc'
 import { distDir } from '../constants'
-import type { WorkerContext, WorkerRPC } from '../types'
+import type {ResolvedConfig, WorkerContext, WorkerRPC} from '../types'
 import { transformRequest } from './transform'
 import type { Vitest } from './index'
 
@@ -74,6 +74,11 @@ export function createWorkerPool(ctx: Vitest): WorkerPool {
 
   const pool = new Tinypool(options)
 
+  const config: ResolvedConfig = {
+    ...ctx.config,
+    // @ts-expect-error remove function to prevent DataCloneError
+    globalSetup: undefined,
+  }
   const runWithFiles = (name: string): RunWithFiles => {
     return async(files, invalidates) => {
       await Promise.all(files.map(async(file) => {
@@ -81,7 +86,7 @@ export function createWorkerPool(ctx: Vitest): WorkerPool {
 
         const data: WorkerContext = {
           port: workerPort,
-          config: ctx.config,
+          config,
           files: [file],
           invalidates,
         }
